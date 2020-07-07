@@ -51,7 +51,7 @@ object AdvancedRecap extends App {
   implicit val timeout = 3000
   def setTimeout(f: () => Unit)(implicit timeout: Int) = f()
 
-  setTimeout(() => println("timeout"))// extra parameter list omitted
+  setTimeout(() => println("timeout"))// extra parameter list omitted by compiler
 
   // implicit conversions
   // 1) implicit defs
@@ -70,18 +70,23 @@ object AdvancedRecap extends App {
   "Lassie".bark
   // new Dog("Lassie").bark - automatically done by the compiler
 
-  // organize
-  // local scope
-  implicit val inverseOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
-  List(1,2,3).sorted // List(3,2,1)
+  // organize properly => because otherwise other can confuse where it is happening
 
-  // imported scope
+  //priority of scopes => local > imported > companion objects
+  // local scope => picks the first nearest scope of implicit if implcits at multiple levels
+  implicit val inverseOrdering: Ordering[Int] = Ordering.fromLessThan(_ > _)
+  List(1,2,3).sorted // List(3,2,1) => sorted function is using the implicit here
+
+  // imported scope example => global implicit coming from imported class
   import scala.concurrent.ExecutionContext.Implicits.global
   val future = Future {
     println("hello, future")
   }
 
   // companion objects of the types included in the call
+  //i.e. only person type is present in list sorted call => companion object of Person is present below => all implicits
+  //inside this are taken into account => since sortint on person, this was implicit required when it searched here and
+  //found it
   object Person {
     implicit val personOrdering: Ordering[Person] = Ordering.fromLessThan((a, b) => a.name.compareTo(b.name) < 0)
   }

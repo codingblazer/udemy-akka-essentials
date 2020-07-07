@@ -1,0 +1,9 @@
+1. We have added akka actor dependency and akka testkit specially to test these and scalaTest.
+
+General Recap
+
+Advanced Recap => Notes in Scala Folder (Mac Notes) and for implicits, in the code itself through comments
+
+Multithreading recap => See the code itself
+
+Thread model limitations => see the code itself

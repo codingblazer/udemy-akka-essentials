@@ -16,7 +16,8 @@ object MultithreadingRecap extends App {
   threadHello.start()
   threadGoodbye.start()
 
-  // different runs produce different results!
+  // different runs produce different results! => As discussed in multithreading mac notes, parallel worker model does not have order defined
+  //and thus every run results different output.
 
   class BankAccount(@volatile private var amount: Int) {
     override def toString: String = "" + amount
@@ -34,13 +35,14 @@ object MultithreadingRecap extends App {
     T1 -> withdraw 1000
     T2 -> withdraw 2000
 
-    T1 -> this.amount = this.amount - .... // PREEMPTED by the OS
+    T1 -> this.amount = this.amount - .... // PREEMPTED by the OS => only this.amount has value of 1000 and thread switched
     T2 -> this.amount = this.amount - 2000 = 8000
-    T1 -> -1000 = 9000
+    T1 -> -1000 = 9000 => the subtraction happened now on top of 1000 value => 900 which got written back.
 
     => result = 9000
 
-    this.amount = this.amount - 1000 is NOT ATOMIC
+    this.amount = this.amount - 1000 is NOT ATOMIC => that's why it can be breaked between thread switchs and give
+    incorrect results => solution is synchronization
    */
 
   // inter-thread communication on the JVM
